@@ -1,6 +1,12 @@
 Chirpy is an audio text messaging app.
 
 
+## Install
+
+Download the latest Android Package (APK):
+[chirpy-0.1.apk](https://github.com/eliteraspberries/chirpy/releases/tag/v0.1)
+
+
 ## Requirements
 
 The Chirpy app requires:
