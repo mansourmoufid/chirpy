@@ -1,0 +1,244 @@
+--- love-11.1-android-source/love/src/jni/love/src/modules/audio/openal/RecordingDevice.cpp.orig	2018-04-15 15:33:58.000000000 -0400
++++ love-11.1-android-source/love/src/jni/love/src/modules/audio/openal/RecordingDevice.cpp	2019-09-01 12:44:42.000000000 -0400
+@@ -78,6 +78,13 @@
+ 	this->bitDepth = bitDepth;
+ 	this->channels = channels;
+ 
++	soundData = soundInstance()->newSoundData(
++		samples,
++		sampleRate,
++		bitDepth,
++		channels
++	);
++
+ 	return true;
+ }
+ 
+@@ -86,6 +93,10 @@
+ 	if (!isRecording())
+ 		return;
+ 
++	if (soundData)
++		free(soundData);
++	soundData = nullptr;
++
+ 	alcCaptureStop(device);
+ 	alcCaptureCloseDevice(device);
+ 	device = nullptr;
+@@ -100,9 +111,9 @@
+ 	if (samples == 0)
+ 		return nullptr;
+ 
+-	love::sound::SoundData *soundData = soundInstance()->newSoundData(samples, sampleRate, bitDepth, channels);
++	soundData->setSampleCount(samples);
+ 
+-	alcCaptureSamples(device, soundData->getData(), samples);
++	alcCaptureSamples(device, soundData->getData(), soundData->getSampleCount());
+ 
+ 	return soundData;
+ }
+--- love-11.1-android-source/love/src/jni/love/src/modules/audio/openal/RecordingDevice.h.orig	2018-04-15 15:33:58.000000000 -0400
++++ love-11.1-android-source/love/src/jni/love/src/modules/audio/openal/RecordingDevice.h	2019-09-01 12:44:42.000000000 -0400
+@@ -72,6 +72,7 @@
+ 
+ 	std::string name;
+ 	ALCdevice *device = nullptr;
++	love::sound::SoundData *soundData = nullptr;
+ 
+ }; //RecordingDevice
+ 
+--- love-11.1-android-source/love/src/jni/love/src/modules/audio/wrap_RecordingDevice.cpp.orig	2018-04-15 15:33:58.000000000 -0400
++++ love-11.1-android-source/love/src/jni/love/src/modules/audio/wrap_RecordingDevice.cpp	2019-09-01 12:44:42.000000000 -0400
+@@ -68,7 +68,6 @@
+ 	if (s != nullptr)
+ 	{
+ 		luax_pushtype(L, s);
+-		s->release();
+ 	}
+ 	else
+ 		lua_pushnil(L);
+@@ -86,7 +85,6 @@
+ 	if (s != nullptr)
+ 	{
+ 		luax_pushtype(L, s);
+-		s->release();
+ 	}
+ 	else
+ 		lua_pushnil(L);
+--- love-11.1-android-source/love/src/jni/love/src/modules/filesystem/physfs/Filesystem.cpp.orig	2018-04-15 15:33:58.000000000 -0400
++++ love-11.1-android-source/love/src/jni/love/src/modules/filesystem/physfs/Filesystem.cpp	2019-09-01 12:44:42.000000000 -0400
+@@ -119,8 +119,12 @@
+ 
+ void Filesystem::init(const char *arg0)
+ {
+-	if (!PHYSFS_init(arg0))
+-		throw love::Exception("Failed to initialize filesystem: %s", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
++	if (!PHYSFS_init(arg0)) {
++		PHYSFS_ErrorCode err = PHYSFS_getLastErrorCode();
++		if (err == PHYSFS_ERR_IS_INITIALIZED)
++			return;
++		throw love::Exception("Failed to initialize filesystem: %s", PHYSFS_getErrorByCode(err));
++	}
+ 
+ 	// Enable symlinks by default.
+ 	setSymlinksEnabled(true);
+--- love-11.1-android-source/love/src/jni/love/src/modules/sound/SoundData.cpp.orig	2018-04-15 15:33:58.000000000 -0400
++++ love-11.1-android-source/love/src/jni/love/src/modules/sound/SoundData.cpp	2019-09-01 12:44:01.000000000 -0400
+@@ -21,6 +21,7 @@
+ #include "SoundData.h"
+ 
+ // C
++#include <cstddef>
+ #include <cstdlib>
+ #include <cstring>
+ 
+@@ -70,6 +71,7 @@
+ 		if (size > std::numeric_limits<size_t>::max() - decoded)
+ 		{
+ 			free(data);
++			data = nullptr;
+ 			throw love::Exception("Not enough memory.");
+ 		}
+ 
+@@ -86,6 +88,7 @@
+ 	channels = decoder->getChannelCount();
+ 	bitDepth = decoder->getBitDepth();
+ 	sampleRate = decoder->getSampleRate();
++	sampleCount = this->getSampleCount();
+ }
+ 
+ SoundData::SoundData(int samples, int sampleRate, int bitDepth, int channels)
+@@ -120,8 +123,9 @@
+ 
+ SoundData::~SoundData()
+ {
+-	if (data != 0)
++	if (data)
+ 		free(data);
++	data = nullptr;
+ }
+ 
+ SoundData *SoundData::clone() const
+@@ -143,21 +147,12 @@
+ 	if (channels <= 0)
+ 		throw love::Exception("Invalid channel count: %d", channels);
+ 
+-	if (data != 0)
+-	{
+-		free(data);
+-		data = 0;
+-	}
+-
+ 	size = samples * (bitDepth / 8) * channels;
+ 	this->sampleRate = sampleRate;
+ 	this->bitDepth = bitDepth;
+ 	this->channels = channels;
+ 
+-	double realsize = samples;
+-	realsize *= (bitDepth / 8) * channels;
+-	if (realsize > std::numeric_limits<size_t>::max())
+-		throw love::Exception("Data is too big!");
++	setSampleCount(samples);
+ 
+ 	data = (uint8 *) malloc(size);
+ 	if (!data)
+@@ -196,18 +191,18 @@
+ 
+ int SoundData::getSampleCount() const
+ {
+-	return (int) ((size/channels)/(bitDepth/8));
++	return sampleCount;
+ }
+ 
+ float SoundData::getDuration() const
+ {
+-	return float(size) / (channels*sampleRate*bitDepth/8);
++	return float(sampleCount) / sampleRate;
+ }
+ 
+ void SoundData::setSample(int i, float sample)
+ {
+ 	// Check range.
+-	if (i < 0 || (size_t) i >= size/(bitDepth/8))
++	if (i < 0 || i >= sampleCount * channels)
+ 		throw love::Exception("Attempt to set out-of-range sample!");
+ 
+ 	if (bitDepth == 16)
+@@ -231,17 +226,26 @@
+ 	return setSample(i * channels + (channel - 1), sample);
+ }
+ 
++void SoundData::setSampleCount(int samples)
++{
++	constexpr size_t max = std::numeric_limits<size_t>::max();
++	if (samples <= 0 || samples > max / (bitDepth / 8) / channels)
++		throw love::Exception("Invalid sample count: %d", samples);
++
++	sampleCount = samples;
++}
++
+ float SoundData::getSample(int i) const
+ {
+ 	// Check range.
+-	if (i < 0 || (size_t) i >= size/(bitDepth/8))
++	if (i < 0 || i >= sampleCount * channels)
+ 		throw love::Exception("Attempt to get out-of-range sample!");
+ 
+ 	if (bitDepth == 16)
+ 	{
+ 		// 16-bit sample values are signed.
+ 		int16 *s = (int16 *) data;
+-		return (float) s[i] / (float) LOVE_INT16_MAX;
++		return (float) s[i] / (float) (LOVE_INT16_MAX + 1);
+ 	}
+ 	else
+ 	{
+--- love-11.1-android-source/love/src/jni/love/src/modules/sound/SoundData.h.orig	2018-04-15 15:33:58.000000000 -0400
++++ love-11.1-android-source/love/src/jni/love/src/modules/sound/SoundData.h	2019-09-01 12:44:42.000000000 -0400
+@@ -58,6 +58,7 @@
+ 
+ 	void setSample(int i, float sample);
+ 	void setSample(int i, int channel, float sample);
++	void setSampleCount(int samples);
+ 	float getSample(int i) const;
+ 	float getSample(int i, int channel) const;
+ 
+@@ -71,6 +72,7 @@
+ 	int sampleRate;
+ 	int bitDepth;
+ 	int channels;
++	int sampleCount;
+ 
+ }; // SoundData
+ 
+--- love-11.1-android-source/love/src/jni/SDL2-2.0.7/src/video/android/SDL_androidwindow.c.orig	2018-04-15 15:33:58.000000000 -0400
++++ love-11.1-android-source/love/src/jni/SDL2-2.0.7/src/video/android/SDL_androidwindow.c	2019-09-01 12:44:42.000000000 -0400
+@@ -29,7 +29,6 @@
+ 
+ #include "SDL_androidvideo.h"
+ #include "SDL_androidwindow.h"
+-#include "SDL_hints.h"
+ 
+ int
+ Android_CreateWindow(_THIS, SDL_Window * window)
+@@ -43,9 +42,6 @@
+     Android_PauseSem = SDL_CreateSemaphore(0);
+     Android_ResumeSem = SDL_CreateSemaphore(0);
+ 
+-    /* Set orientation */
+-    Android_JNI_SetOrientation(window->w, window->h, window->flags & SDL_WINDOW_RESIZABLE, SDL_GetHint(SDL_HINT_ORIENTATIONS));
+-
+     /* Adjust the window data to match the screen */
+     window->x = 0;
+     window->y = 0;
+--- love-11.1-android-source/love/src/jni/openal-soft-1.18.2/common/math_defs.h.orig	2019-09-01 13:20:31.000000000 -0400
++++ love-11.1-android-source/love/src/jni/openal-soft-1.18.2/common/math_defs.h	2019-09-01 13:20:56.000000000 -0400
+@@ -22,7 +22,7 @@
+ #define HUGE_VALF (msvc_inf_union.f)
+ #endif
+ 
+-#ifndef HAVE_LOG2F
++#if 0
+ static inline float log2f(float f)
+ {
+     return logf(f) / logf(2.0f);

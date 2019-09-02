@@ -1,0 +1,43 @@
+--- fftw-3.3.4/Makefile.am.orig	2019-04-19 20:02:03.000000000 -0400
++++ fftw-3.3.4/Makefile.am	2019-04-19 20:03:20.000000000 -0400
+@@ -85,8 +85,7 @@
+ # cannot use -no-undefined since dependent on libquadmath
+ libfftw3@PREC_SUFFIX@_la_LDFLAGS = -version-info @SHARED_VERSION_INFO@
+ else
+-libfftw3@PREC_SUFFIX@_la_LDFLAGS = -no-undefined -version-info	\
+-@SHARED_VERSION_INFO@
++libfftw3@PREC_SUFFIX@_la_LDFLAGS = -no-undefined -avoid-version
+ endif
+ 
+ fftw3@PREC_SUFFIX@.pc: fftw.pc
+--- fftw-3.3.4/mpi/Makefile.am.orig	2019-04-19 20:17:00.000000000 -0400
++++ fftw-3.3.4/mpi/Makefile.am	2019-04-19 20:17:24.000000000 -0400
+@@ -23,7 +23,7 @@
+ 
+ libfftw3@PREC_SUFFIX@_mpi_la_SOURCES = $(SRC) $(TRANSPOSE_SRC) $(DFT_SRC) $(RDFT_SRC) $(RDFT2_SRC)
+ 
+-libfftw3@PREC_SUFFIX@_mpi_la_LDFLAGS = -version-info @SHARED_VERSION_INFO@
++libfftw3@PREC_SUFFIX@_mpi_la_LDFLAGS = -avoid-version
+ libfftw3@PREC_SUFFIX@_mpi_la_LIBADD = ../libfftw3@PREC_SUFFIX@.la @MPILIBS@
+ 
+ if THREADS
+--- fftw-3.3.4/threads/Makefile.am.orig	2019-04-19 20:24:47.000000000 -0400
++++ fftw-3.3.4/threads/Makefile.am	2019-04-19 20:25:31.000000000 -0400
+@@ -25,7 +25,7 @@
+ threads.h dft-vrank-geq1.c ct.c rdft-vrank-geq1.c hc2hc.c		\
+ vrank-geq1-rdft2.c f77api.c f77funcs.h
+ libfftw3@PREC_SUFFIX@_threads_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
+-libfftw3@PREC_SUFFIX@_threads_la_LDFLAGS = -version-info @SHARED_VERSION_INFO@
++libfftw3@PREC_SUFFIX@_threads_la_LDFLAGS = -avoid-version
+ if !COMBINED_THREADS
+ libfftw3@PREC_SUFFIX@_threads_la_LIBADD = ../libfftw3@PREC_SUFFIX@.la
+ endif
+@@ -34,7 +34,7 @@
+ threads.h dft-vrank-geq1.c ct.c rdft-vrank-geq1.c hc2hc.c	\
+ vrank-geq1-rdft2.c f77api.c f77funcs.h
+ libfftw3@PREC_SUFFIX@_omp_la_CFLAGS = $(AM_CFLAGS) $(OPENMP_CFLAGS)
+-libfftw3@PREC_SUFFIX@_omp_la_LDFLAGS = -version-info @SHARED_VERSION_INFO@
++libfftw3@PREC_SUFFIX@_omp_la_LDFLAGS = -avoid-version
+ if !COMBINED_THREADS
+ libfftw3@PREC_SUFFIX@_omp_la_LIBADD = ../libfftw3@PREC_SUFFIX@.la
+ endif
