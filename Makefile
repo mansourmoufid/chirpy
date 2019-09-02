@@ -31,8 +31,15 @@ lib/libnu.so: android-env.sh build-nu.sh
 .PHONY: love
 love: chirpy.love
 
+.PHONY: icon
+icon:
+	for x in mdpi hdpi xhdpi xxhdpi xxxhdpi; do \
+		cp icon/chirpy-$$x.png \
+			chirpy-android/app/src/main/res/drawable-$$x/chirpy.png; \
+	done
+
 .PHONY: apk
-apk: $(SO)
+apk: $(SO) icon
 	MOBILE=true $(MAKE) chirpy.love
 	mkdir -p chirpy-android/app/src/main/jniLibs/armeabi-v7a
 	cp lib/*.so chirpy-android/app/src/main/jniLibs/armeabi-v7a/
@@ -60,6 +67,9 @@ cleanup:
 clean: cleanup
 	rm -f chirpy.love
 	rm -f $(SO)
+	for x in mdpi hdpi xhdpi xxhdpi xxxhdpi; do \
+		rm -f chirpy-android/app/src/main/res/drawable-$$x/chirpy.png; \
+	done
 	for so in lib/*.so; do \
 		rm -f chirpy-android/app/src/main/jniLibs/armeabi-v7a/$$so; \
 	done
