@@ -1,0 +1,10 @@
+<resources>
+
+    <style name="LÖVETheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="ChirpyTheme" parent="@style/LÖVETheme">
+    </style>
+
+</resources>
