@@ -1,10 +1,29 @@
 Chirpy is an audio text messaging app.
 
+Chirpy is a fun demonstration of chirp modulation.
+
 
 ## Install
 
 Download the latest Android Package (APK):
 [chirpy-0.1.apk](https://github.com/eliteraspberries/chirpy/releases/tag/v0.1)
+
+
+## Usage
+
+On screen you will see three buttons (①, ②, ③), text input or received (④),
+and plots of the decoding process (⑤, ⑥).
+
+![Example usage](chirpy.gif)
+
+ 1. The 'debug' button toggles the information displayed in the background.
+ 2. The 'mic' button toggles the decoding process.
+    Turn this off when not in use because it consumes battery.
+ 3. The 'keyboard' button toggles keyboard input.
+ 4. Text sent or received is displayed at the top of the screen.
+ 5. and 6 are plots of the cross-correlation of the audio received and
+    the zero and one chirps.
+    A peak indicates the presence of a chirp.
 
 
 ## Requirements
