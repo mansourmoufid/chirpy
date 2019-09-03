@@ -76,10 +76,10 @@ Download, extract, and patch FFTW version 3.3.4:
     $ gunzip < fftw-3.3.4.tar.gz | tar -f - -x
     $ patch -b -p0 < patches/patch-fftw-3.3.4
 
-Download and extract Nu version 0.5:
+Download and extract Nu version 0.6:
 
-    $ curl -L -O https://github.com/eliteraspberries/nu/releases/download/v0.5/nu-0.5.tar.gz
-    $ gunzip < nu-0.5.tar.gz | tar -f - -x
+    $ curl -L -O https://github.com/eliteraspberries/nu/releases/download/v0.6/nu-0.6.tar.gz
+    $ gunzip < nu-0.6.tar.gz | tar -f - -x
 
 Download lua-libfftw:
 

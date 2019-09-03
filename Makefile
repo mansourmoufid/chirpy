@@ -26,7 +26,7 @@ lib/libfftw3f.so: android-env.sh build-fftw.sh
 	VERSION=3.3.4 sh android-env.sh sh build-fftw.sh --enable-openmp
 
 lib/libnu.so: android-env.sh build-nu.sh
-	VERSION=0.5 sh android-env.sh sh build-nu.sh
+	VERSION=0.6 sh android-env.sh sh build-nu.sh
 
 .PHONY: love
 love: chirpy.love
