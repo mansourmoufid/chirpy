@@ -22,6 +22,11 @@ SO:=	lib/libfftw3f.so lib/libnu.so
 .PHONY: so
 so: $(SO)
 
+.PHONY: clean-so
+clean-so:
+	rm -f $(SO)
+	rm -rf android-toolchain
+
 lib/libfftw3f.so: android-env.sh build-fftw.sh
 	VERSION=3.3.4 sh android-env.sh sh build-fftw.sh --enable-openmp
 
@@ -31,20 +36,37 @@ lib/libnu.so: android-env.sh build-nu.sh
 .PHONY: love
 love: chirpy.love
 
-.PHONY: icon
-icon:
+.PHONY: clean-love
+clean-love:
+	rm -f chirpy.love
+
+.PHONY: apk-icon
+apk-icon:
 	for x in mdpi hdpi xhdpi xxhdpi xxxhdpi; do \
 		cp icon/chirpy-$$x.png \
 			chirpy-android/app/src/main/res/drawable-$$x/chirpy.png; \
 	done
 
+.PHONY: clean-apk-icon
+clean-apk-icon:
+	for x in mdpi hdpi xhdpi xxhdpi xxxhdpi; do \
+		rm -f chirpy-android/app/src/main/res/drawable-$$x/chirpy.png; \
+	done
+
 .PHONY: apk
-apk: $(SO) icon
+apk: $(SO) apk-icon
 	MOBILE=true $(MAKE) chirpy.love
 	mkdir -p chirpy-android/app/src/main/jniLibs/armeabi-v7a
 	cp lib/*.so chirpy-android/app/src/main/jniLibs/armeabi-v7a/
 	mkdir -p chirpy-android/love/src/main/assets
 	cp chirpy.love chirpy-android/love/src/main/assets/game.love
+
+.PHONY: clean-apk
+clean-apk: clean-so clean-apk-icon
+	for so in $(SO); do \
+		rm -f chirpy-android/app/src/main/jniLibs/armeabi-v7a/$$so; \
+	done
+	rm -f chirpy-android/love/src/main/assets/game.love
 
 .PHONY: mobile.lua
 mobile.lua:
@@ -61,19 +83,10 @@ chirpy.love: main.lua $(DEPENDS) $(FONTS)
 .PHONY: cleanup
 cleanup:
 	rm -f chirpy.zip
-	rm -rf android-toolchain
+	rm -f mobile.lua
 
 .PHONY: clean
-clean: cleanup
-	rm -f chirpy.love
-	rm -f $(SO)
-	for x in mdpi hdpi xhdpi xxhdpi xxxhdpi; do \
-		rm -f chirpy-android/app/src/main/res/drawable-$$x/chirpy.png; \
-	done
-	for so in lib/*.so; do \
-		rm -f chirpy-android/app/src/main/jniLibs/armeabi-v7a/$$so; \
-	done
-	rm -f chirpy-android/love/src/main/assets/game.love
+clean: cleanup clean-apk clean-love
 
 .PHONY: check
 check: $(DEPENDS)
