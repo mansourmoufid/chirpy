@@ -11,10 +11,10 @@ local function split(x, w, n, f, g)
         local j = i - 1
         local a = two ^ (w * (j + 1))
         local b = two ^ (w * j)
-        if a == 0 or b == 0 then
+        if b == 0 then
             break
         end
-        local z = x % a / b
+        local z = (a > 0) and (x % a / b) or (x / b)
         xs[i] = g(z)
     end
     return xs
