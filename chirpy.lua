@@ -2,13 +2,6 @@
 
 local chirpy = {}
 
-local love = require('love')
-love.audio = require('love.audio')
-love.data = require('love.data')
-love.sound = require('love.sound')
-love.thread = require('love.thread')
-love.timer = require('love.timer')
-
 local array = require('array')
 local nu = require('libnu')
 local pointer = require('pointer')
