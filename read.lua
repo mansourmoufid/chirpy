@@ -1,6 +1,8 @@
 -- Copyright 2019, Mansour Moufid <mansourmoufid@gmail.com>
 
 local love = require('love')
+love.audio = require('love.audio') -- RecordingDevice
+love.sound = require('love.sound') -- SoundData
 love.thread = require('love.thread')
 love.timer = require('love.timer')
 
