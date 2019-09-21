@@ -53,11 +53,11 @@ Fetch this repository and change into its directory:
     $ git clone https://github.com/eliteraspberries/chirpy.git
     $ cd chirpy
 
-Download, extract, and patch FFTW version 3.3.4:
+Download, extract, and patch FFTW version 3.3.8:
 
-    $ curl -L -O http://www.fftw.org/fftw-3.3.4.tar.gz
-    $ gunzip < fftw-3.3.4.tar.gz | tar -f - -x
-    $ patch -b -p0 < patches/patch-fftw-3.3.4
+    $ curl -L -O http://www.fftw.org/fftw-3.3.8.tar.gz
+    $ gunzip < fftw-3.3.8.tar.gz | tar -f - -x
+    $ patch -b -p0 < patches/patch-fftw-3.3.8
 
 Download and extract Nu version 0.6:
 
