@@ -4,7 +4,7 @@ lib/libfftw3f.so: android-env.sh ../build-fftw.sh
 	VERSION=3.3.8 sh android-env.sh sh ../build-fftw.sh --enable-openmp
 
 lib/libnu.so: android-env.sh ../build-nu.sh
-	VERSION=0.6 sh android-env.sh sh ../build-nu.sh
+	VERSION=0.7 sh android-env.sh sh ../build-nu.sh
 
 .PHONY: so
 so:
