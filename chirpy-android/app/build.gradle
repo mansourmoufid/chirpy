@@ -5,8 +5,8 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         applicationId "com.eliteraspberries.chirpy"
-        versionCode 3
-        versionName "0.3"
+        versionCode 4
+        versionName "0.4"
         minSdkVersion rootProject.ext.minSdkVersion
         resConfigs rootProject.ext.resConfigs
     }
