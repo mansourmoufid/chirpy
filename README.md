@@ -6,7 +6,7 @@ Chirpy is a fun demonstration of chirp modulation.
 ## Install
 
 Download the latest Android Package (APK):
-[chirpy-0.3.apk](https://github.com/eliteraspberries/chirpy/releases/tag/v0.3)
+https://github.com/eliteraspberries/chirpy/releases/tag/v0.4
 
 
 ## Usage
