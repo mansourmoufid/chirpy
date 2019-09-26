@@ -5,23 +5,21 @@ dir="$(cd $(dirname $0) && pwd)"
 lib="$(pwd)/lib"
 export CFLAGS="-Os $CFLAGS"
 export CFLAGS="-ffp-contract=on $CFLAGS"
-if test -z "$TARGET"; then
-    TARGET="$(CC -dumpmachine)"
-fi
 cd ${dir}/fftw-${VERSION}
 autoreconf -i -Wnone
+BUILD="$(llvm-config --host-target)"
+TARGET="${TARGET:=$BUILD}"
 ./configure \
     --disable-fortran \
     --disable-static \
     --enable-float \
-    --enable-fma \
     --enable-shared \
-    --host=$TARGET \
-    --target=$TARGET \
+    --build=${BUILD} \
+    --host=${TARGET} \
     $@
 make
 mkdir -p .destdir
 make install DESTDIR=$(pwd)/.destdir
-find .destdir -name '*.dylib' -o -name '*.so' \
-    | while read f; do cp ${f} ${lib}; done
+find .destdir -name '*.dylib' | while read f; do cp ${f} ${lib}/; done
+find .destdir -name '*.so' | while read f; do cp ${f} ${lib}/${ABI}/; done
 make clean

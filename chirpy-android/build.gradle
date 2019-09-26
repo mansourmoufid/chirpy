@@ -22,7 +22,6 @@ ext {
     compileSdkVersion = 28
     buildToolsVersion = '28.0.2'
     supportLibVersion = '28.0.0'
-    abiFilters = 'armeabi-v7a'
     minSdkVersion = 19
     targetSdkVersion = 19
     resConfigs = 'en'

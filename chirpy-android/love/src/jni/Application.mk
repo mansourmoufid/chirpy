@@ -2,12 +2,10 @@
 # See CPLUSPLUS-SUPPORT.html in the NDK documentation for more information
 # APP_STL := stlport_static 
 APP_STL := c++_shared
-APP_ABI := armeabi-v7a
+APP_ABI := armeabi-v7a arm64-v8a
 APP_CPPFLAGS += -DNDEBUG
 APP_CFLAGS += -fpic -frtti -fwrapv
 APP_CFLAGS += -Os
-#APP_CFLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv4
-#APP_CFLAGS += -mthumb
 APP_LDFLAGS := -llog -landroid -lz
 APP_PLATFORM := 19
 NDK_TOOLCHAIN_VERSION := clang

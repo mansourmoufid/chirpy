@@ -1,0 +1,45 @@
+--- LuaJIT-2.1.0-beta3/src/Makefile.orig	2017-05-01 15:05:00.000000000 -0400
++++ LuaJIT-2.1.0-beta3/src/Makefile	2019-09-25 20:16:52.000000000 -0400
+@@ -27,7 +27,7 @@
+ DEFAULT_CC = gcc
+ #
+ # LuaJIT builds as a native 32 or 64 bit binary by default.
+-CC= $(DEFAULT_CC)
++CC?= $(DEFAULT_CC)
+ #
+ # Use this if you want to force a 32 bit build on a 64 bit multilib OS.
+ #CC= $(DEFAULT_CC) -m32
+@@ -186,11 +186,11 @@
+ #   make HOST_CC="gcc -m32" CROSS=i586-mingw32msvc- TARGET_SYS=Windows
+ #   make HOST_CC="gcc -m32" CROSS=powerpc-linux-gnu-
+ 
+-ASOPTIONS= $(CCOPT) $(CCWARN) $(XCFLAGS) $(CFLAGS)
++ASOPTIONS= $(CCOPT) $(CCWARN) $(XCFLAGS) $(CPPFLAGS) $(CFLAGS)
+ CCOPTIONS= $(CCDEBUG) $(ASOPTIONS)
+ LDOPTIONS= $(CCDEBUG) $(LDFLAGS)
+ 
+-HOST_CC= $(CC)
++HOST_CC?= $(CC)
+ HOST_RM= rm -f
+ # If left blank, minilua is built and used. You can supply an installed
+ # copy of (plain) Lua 5.1 or 5.2, plus Lua BitOp. E.g. with: HOST_LUA=lua
+@@ -199,8 +199,8 @@
+ HOST_XCFLAGS= -I.
+ HOST_XLDFLAGS=
+ HOST_XLIBS=
+-HOST_ACFLAGS= $(CCOPTIONS) $(HOST_XCFLAGS) $(TARGET_ARCH) $(HOST_CFLAGS)
+-HOST_ALDFLAGS= $(LDOPTIONS) $(HOST_XLDFLAGS) $(HOST_LDFLAGS)
++HOST_ACFLAGS= $(HOST_XCFLAGS) $(TARGET_ARCH) $(HOST_CFLAGS)
++HOST_ALDFLAGS= $(HOST_XLDFLAGS) $(HOST_LDFLAGS)
+ HOST_ALIBS= $(HOST_XLIBS) $(LIBS) $(HOST_LIBS)
+ 
+ STATIC_CC = $(CROSS)$(CC)
+@@ -585,7 +585,7 @@
+ endif
+ endif
+ 
+-Q= @
++Q=
+ E= @echo
+ #Q=
+ #E= @:

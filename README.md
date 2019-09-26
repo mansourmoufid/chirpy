@@ -30,10 +30,10 @@ and plots of the decoding process (⑤, ⑥).
 
 The Chirpy app requires:
 
-  - a 32-bit ARM CPU (ARMv7-A) with VFP coprocessor (VFPv4); and
-  - Android version 4.4 (KitKat) or later.
+  - a 32-bit ARM CPU (ARMv7-A) and Android 4.4 (KitKat) or later; or
+  - a 64-bit ARM CPU (ARMv8-A) and Android 5.0 (Lollipop) or later.
 
-That means most Android smartphones except the newest ones.
+That means most Android smartphones.
 
 Building Chirpy requires:
 
