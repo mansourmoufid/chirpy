@@ -2,6 +2,8 @@ Chirpy is an audio text messaging app.
 
 Chirpy is a fun demonstration of chirp modulation.
 
+[Watch a demo on YouTube.](https://youtu.be/N_shPkmxtuw)
+
 
 ## Install
 
